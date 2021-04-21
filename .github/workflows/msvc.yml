@@ -1,0 +1,33 @@
+---
+
+name: MSVC Build
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      PYTHONIOENCODING: "utf-8"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v1
+      - name: Setup MSVC
+        uses: seanmiddleditch/gha-setup-vsdevenv@master
+      - name: Install Bison
+        run:
+          choco install winflexbison3 -y --no-progress --stop-on-first-failure
+      - name: Build
+        uses: BSFishy/meson-build@v1.0.3
+        with:
+          action: test
+          setup-options: >-
+            -Denable-x11=false
+            -Denable-docs=false
+            -Denable-wayland=false
+            -Denable-xkbregistry=false
+          options: >-
+            --print-errorlogs
+            --no-suite python-tests
